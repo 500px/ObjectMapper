@@ -6,10 +6,6 @@ Pod::Spec.new do |s|
   s.homepage = 'https://github.com/Hearst-DD/ObjectMapper'
   s.authors = { 'Tristan Himmelman' => 'tristanhimmelman@gmail.com' }
   s.source = { :git => 'https://github.com/500px/ObjectMapper.git', :tag => s.version }
-
   s.platform = :ios, '8.0'
-
-  s.swift_version = '4.0'
-
   s.source_files = 'Sources/**/*.swift'
 end

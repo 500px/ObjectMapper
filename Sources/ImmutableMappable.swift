@@ -213,11 +213,11 @@ public extension Mapper where N: ImmutableMappable {
 	
 	// MARK: Array mapping functions
 	
-	public func mapArray(JSONArray: [[String: Any]]) throws -> [N] {
+	public func mapArray(JSONArray: [[String: Any]]) -> [N] {
 		#if swift(>=4.1)
-		return try JSONArray.compactMap(mapOrFail)
+		return JSONArray.compactMap { try? mapOrFail(JSON: $0) }
 		#else
-		return try JSONArray.flatMap(mapOrFail)
+		return JSONArray.flatMap    { try? mapOrFail(JSON: $0) }
 		#endif
 	}
 	
@@ -234,7 +234,7 @@ public extension Mapper where N: ImmutableMappable {
 			throw MapError(key: nil, currentValue: JSONObject, reason: "Cannot cast to '[[String: Any]]'")
 		}
 		
-		return try mapArray(JSONArray: JSONArray)
+		return mapArray(JSONArray: JSONArray)
 	}
 
 	// MARK: Dictionary mapping functions
@@ -265,12 +265,13 @@ public extension Mapper where N: ImmutableMappable {
 		guard let JSON = JSONObject as? [String: [[String: Any]]] else {
 			throw MapError(key: nil, currentValue: JSONObject, reason: "Cannot cast to '[String: [String: Any]]''")
 		}
-		return try mapDictionaryOfArrays(JSON: JSON)
+
+		return mapDictionaryOfArrays(JSON: JSON)
 	}
 
-	public func mapDictionaryOfArrays(JSON: [String: [[String: Any]]]) throws -> [String: [N]] {
-		return try JSON.filterMap { array -> [N] in
-			try mapArray(JSONArray: array)
+	public func mapDictionaryOfArrays(JSON: [String: [[String: Any]]]) -> [String: [N]] {
+		return JSON.filterMap { array -> [N] in
+			mapArray(JSONArray: array)
 		}
 	}
 
@@ -280,7 +281,7 @@ public extension Mapper where N: ImmutableMappable {
 		guard let JSONArray = JSONObject as? [[[String: Any]]] else {
 			throw MapError(key: nil, currentValue: JSONObject, reason: "Cannot cast to '[[[String: Any]]]''")
 		}
-		return try JSONArray.map(mapArray)
+		return JSONArray.map(mapArray)
 	}
 
 }
